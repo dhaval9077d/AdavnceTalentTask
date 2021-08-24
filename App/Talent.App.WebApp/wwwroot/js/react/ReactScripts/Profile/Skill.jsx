@@ -1,4 +1,4 @@
-﻿/* Skill section */
+/* Skill section */
 import React from 'react';
 import Cookies from 'js-cookie';
 import { Grid , Icon, Input,Table,Button} from 'semantic-ui-react';
@@ -40,14 +40,22 @@ export default class Skill extends React.Component {
     openAdd() {
         //const details = Object.assign({}, this.props.details)
         this.setState({
-            showEditSection: true
+            showEditSection: true,
+            newSkill: {
+                name: '',
+                level: ''
+            }
             //newContact: details
         })
     }
     closeAdd() {
         this.setState({
             showEditSection: false,
-            edit:false
+            edit:false,
+            newSkill: {
+                name: '',
+                level: ''
+            }
         })
     }  
     openEdit(event)
@@ -89,33 +97,40 @@ export default class Skill extends React.Component {
         {
             newSkill
         }
-        console.log("save"+ this.state.newSkill);
-        var cookies = Cookies.get('talentAuthToken');
-        $.ajax({
-            url: 'http://advancetaskprofile.azurewebsites.net/profile/profile/AddSkill',
-            headers: {
-                'Authorization': 'Bearer ' + cookies,
-                'Content-Type': 'application/json'
-            },
-            type: "POST",
-            data: JSON.stringify(this.state.newSkill),
-            success: function (res) {
-                console.log(res)
-                if (res.success == true) {
-                    TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
-                    this.props.loadData()
-                } else {
-                    TalentUtil.notification.show("Profile did not update successfully", "error", null, null)
+        console.log(this.state.newSkill)
+        if(this.state.newSkill.name == null || this.state.newSkill.name == "" )
+        {
+            TalentUtil.notification.show("Please enter a valid skill", "error", null, null)
+        }
+        else
+        {
+            var cookies = Cookies.get('talentAuthToken');
+            $.ajax({
+                url: 'http://advancetaskprofile.azurewebsites.net/profile/profile/AddSkill',
+                headers: {
+                    'Authorization': 'Bearer ' + cookies,
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                data: JSON.stringify(this.state.newSkill),
+                success: function (res) {
+                    console.log(res)
+                    if (res.success == true) {
+                        TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
+                        this.props.loadData()
+                    } else {
+                        TalentUtil.notification.show("Profile did not update successfully", "error", null, null)
+                    }
+                }.bind(this),
+                error: function (res, a, b) {
+                    console.log(res)
+                    console.log(a)
+                    console.log(b)
                 }
-            }.bind(this),
-            error: function (res, a, b) {
-                console.log(res)
-                console.log(a)
-                console.log(b)
-            }
-        })
-        this.closeAdd()
-        this.props.loadData()
+            })
+            this.closeAdd()
+            this.props.loadData()
+        }
     }
     OnDeleteClick(event)
     {
@@ -246,10 +261,9 @@ export default class Skill extends React.Component {
                     <Table.Cell><Input placeholder='Add Language' focus={true} defaultValue={l.name} name='name' onFocus={this.onUpdateSkill} onChange={this.onUpdateSkill} /></Table.Cell>
                     <Table.Cell>
                         <select name='level' defaultValue={l.level} onFocus={this.onUpdateLevel} onChange={this.onUpdateLevel}>
-                            <option value="Basic">Basic</option>
-                            <option value="Conversational">Conversational</option>
-                            <option value="Fluent">Fluent</option>
-                            <option value="Native/Bilingual">Native/Bilingual</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Expert">Expert</option>
                         </select>
                     </Table.Cell>
                     <Table.Cell textAlign='right'>
