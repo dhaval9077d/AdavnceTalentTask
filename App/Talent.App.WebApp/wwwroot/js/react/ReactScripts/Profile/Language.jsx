@@ -1,4 +1,4 @@
-﻿/* Language section */
+/* Language section */
 import React from 'react';
 import Cookies from 'js-cookie';
 import { Grid , Icon, Input,Table,Button} from 'semantic-ui-react';
@@ -32,28 +32,43 @@ export default class Language extends React.Component {
     openAdd() 
     {
         this.setState({
-            showEditSection: true
+            showEditSection: true,
+            newLanguage:
+            {
+                name:'',
+                level:''
+            }
         })
     }
     closeAdd() {
         this.setState({
             showEditSection: false,
-            edit:false
+            edit:false,
+            newLanguage:
+            {
+                name:'',
+                level:''
+            }
         })
-        this.props.loadData();
+        //this.props.loadData();
     } 
-    openEdit(event)
+    openEdit(l)
     {
         this.setState(
             {
                 edit:true,
-                editId:event.target.id
+                editId:l.id,
+                newLanguage:
+                {
+                    name:l.name,
+                    level:l.level
+                }
             }
         )
     }
     handleChange(event) {
         const data = Object.assign({}, this.state.newLanguage)
-        data[event.target.name] = event.target.value ? event.target.value : event.target.defaultValue;
+        data[event.target.name] = event.target.value 
         this.setState({
             newLanguage:data
         })
@@ -61,7 +76,7 @@ export default class Language extends React.Component {
     onUpdateName(event)
     {
         const newLanguage=this.state.newLanguage
-        newLanguage.name=event.target.value ? event.target.value : event.target.defaultValue
+        newLanguage.name=event.target.value
         this.setState(
             {
                 newLanguage
@@ -72,7 +87,7 @@ export default class Language extends React.Component {
     onUpdateLevel(event)
     {
         const newLanguage=this.state.newLanguage
-        newLanguage.level=event.target.value ? event.target.value : event.target.defaultValue
+        newLanguage.level=event.target.value
         this.setState(
             {
                 newLanguage
@@ -163,33 +178,40 @@ export default class Language extends React.Component {
         {
             newLanguage
         }
-        console.log(this.state.newLanguage)
-       var cookies = Cookies.get('talentAuthToken');
-       $.ajax({
-           url: 'http://advancetaskprofile.azurewebsites.net/profile/profile/AddLanguage',
-           headers: {
-               'Authorization': 'Bearer ' + cookies,
-               'Content-Type': 'application/json'
-           },
-           type: "POST",
-           data: JSON.stringify(this.state.newLanguage),
-           success: function (res) {
-               console.log(res)
-               if (res.success == true) {
-                   TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
-                   this.props.loadData()
-               } else {
-                   TalentUtil.notification.show("Profile did not update successfully", "error", null, null)
-               }
-           }.bind(this),
-           error: function (res, a, b) {
-               console.log(res)
-               console.log(a)
-               console.log(b)
-           }
-       })
-      this.closeAdd()
-      this.props.loadData()
+        console.log("Condition check"+this.state.newLanguage.name.length , this.state.newLanguage.level.length)
+        if(this.state.newLanguage.name.length === 0 || this.state.newLanguage.level.length === 0)
+        {
+            TalentUtil.notification.show("Please enter a valid language", "error", null, null)
+        }
+        else
+        {
+            var cookies = Cookies.get('talentAuthToken');
+            $.ajax({
+                url: 'http://advancetaskprofile.azurewebsites.net/profile/profile/AddLanguage',
+                headers: {
+                    'Authorization': 'Bearer ' + cookies,
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                data: JSON.stringify(this.state.newLanguage),
+                success: function (res) {
+                    console.log(res)
+                    if (res.success == true) {
+                        TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
+                        this.props.loadData()
+                    } else {
+                        TalentUtil.notification.show("Profile did not update successfully", "error", null, null)
+                    }
+                }.bind(this),
+                error: function (res, a, b) {
+                    console.log(res)
+                    console.log(a)
+                    console.log(b)
+                }
+            })
+            this.closeAdd()
+            this.props.loadData()
+        }
     }
     render()
     {
@@ -262,7 +284,7 @@ export default class Language extends React.Component {
                         <Table.Cell>{l.name}</Table.Cell>
                         <Table.Cell>{l.level}</Table.Cell>
                         <Table.Cell textAlign='right'>
-                            <Icon name='pencil alternate' id={l.id} onClick={this.openEdit}></Icon>
+                            <Icon name='pencil alternate' onClick={ () => this.openEdit(l)}></Icon>
                             <Icon name='cancel' id={l.id} onClick={this.OnDeleteClick}></Icon>
                         </Table.Cell>
                     </Table.Row>  
