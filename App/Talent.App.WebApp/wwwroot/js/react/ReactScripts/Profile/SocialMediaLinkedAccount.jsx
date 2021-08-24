@@ -1,4 +1,4 @@
-﻿/* Social media JSX */
+/* Social media JSX */
 import React from 'react';
 import Cookies from 'js-cookie';
 import { ChildSingleInput } from '../Form/SingleInput.jsx';
@@ -55,7 +55,7 @@ export default class SocialMediaLinkedAccount extends React.Component {
     }
     openLinkedIn()
     {
-        let linkedIn=this.state.newLinkedAccount.linkedIn
+        let linkedIn=this.props.linkedAccounts.linkedIn
         if(linkedIn != 0)
         {
             let i= linkedIn.indexOf("https://",0)
@@ -65,14 +65,14 @@ export default class SocialMediaLinkedAccount extends React.Component {
             }
             else
             {
-                let link='https://' + this.state.newLinkedAccount.linkedIn
+                let link='https://' + this.props.linkedAccounts.linkedIn
                 parent.open(link)
             }    
         }
     }
     openGitHub()
     {
-        let gitHub=this.state.newLinkedAccount.github
+        let gitHub= this.props.linkedAccounts.github
         if(gitHub != 0)
         {
             let i= gitHub.indexOf("https://",0)
@@ -82,9 +82,12 @@ export default class SocialMediaLinkedAccount extends React.Component {
             }
             else
             {
-                let link='https://' + this.state.newLinkedAccount.github
+                let link='https://' + this.props.linkedAccounts.github
                 parent.open(link)
             }    
+        }
+        else{
+            console.log("hello" + this.props.linkedAccounts.github)
         }
     }
     render() {
